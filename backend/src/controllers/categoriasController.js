@@ -1,3 +1,4 @@
+
 const categoriasModel = require("../models/categoriasModel");
 
 const buscarTodos = async (req, res) => {
@@ -7,59 +8,59 @@ const buscarTodos = async (req, res) => {
     res.json(categorias);
 };
 
-const buscarPorId = async (req, res) =>{
+const buscarPorId = async (req, res) => {
     const id = req.params.id;
-    const categorias = await categoriasModel.buscarCategoriaPorId(id);
+    const categoria = await categoriasModel.buscarcategoriasPorId(id);
 
-    if(!categorias){
+    if (!categoria) {
         return res.status(404).json({
-           mensagem: "Categoria não encontrado" 
-        })
-       
-    }
-     res.json(categorias);
-};
-
-const criar = async (req, res) =>{
-    const {categorias} = req.body
-    const criar = await categoriasModel.criarCategoria (categorias);
-
-    res.status(201).json(criar)
-
-};
-
-const editar = async (req, res) =>{
-    const id = req.params.id;
-    const {categorias} = req.body;
-    const categoria = await categoriasModel.buscarCategoriaPorId(id);
-
-        if(!categoria){
-            return res.status(404).json({
-                mensagem: "categoria não encontrado"
-            });
-        }
-
-        const categoriaAtualizado = await categoriasModel.editar(id, categorias);
-        res.json(categoriaAtualizado);
-}
-
-const excluir = async (req, res) =>{
-    const id = req.params.id;
-    const categoria = await categoriasModel.buscarCategoriaPorId(id);
-
-        if(!categoria){
-            return res.status(404).json({
-                mensagem: "categoria não encontrado"
-            });
-
-        }
-
-        await categoriasModel.excluir(id);
-
-        res.json({
-                  mensagem: "categoria Removido com sucefu"
+            mensagem: "Categoria não encontrada"
         });
-}
+    }
+
+    res.json(categoria);
+};
+
+const criar = async (req, res) => {
+    const { nome } = req.body;
+    const criar = await categoriasModel.criarCategoria(nome);
+
+    res.status(201).json(criar);
+};
+
+const editar = async (req, res) => {
+    const id = req.params.id;
+    const { nome } = req.body;
+
+    const categoria = await categoriasModel.buscarcategoriasPorId(id);
+
+    if (!categoria) {
+        return res.status(404).json({
+            mensagem: "Categoria não encontrada"
+        });
+    }
+
+    const categoriaAtualizada = await categoriasModel.editar(id, nome);
+
+    res.json(categoriaAtualizada);
+};
+
+const excluir = async (req, res) => {
+    const id = req.params.id;
+    const categoria = await categoriasModel.buscarcategoriasPorId(id);
+
+    if (!categoria) {
+        return res.status(404).json({
+            mensagem: "Categoria não encontrada"
+        });
+    }
+
+    await categoriasModel.excluir(id);
+
+    res.json({
+        mensagem: "Categoria removida com sucesso"
+    });
+};
 
 module.exports = {
     buscarTodos,
@@ -67,5 +68,4 @@ module.exports = {
     criar,
     editar,
     excluir
-   
 };

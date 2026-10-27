@@ -3,7 +3,7 @@ dotenv.config();
 
 const express = require("express");
 const app = express();
-const PORT = process.env.API_PORT;
+const PORT = process.env.PORT;
 
 const produtosRoutes = require("./routes/produtosRouts");
 const categoriasRoutes = require("./routes/categoriasRoutes")

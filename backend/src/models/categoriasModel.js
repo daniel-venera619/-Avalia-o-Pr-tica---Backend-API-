@@ -2,48 +2,52 @@ const bd = require("../config/database");
 
 async function buscarCategoria() {
     const sql = `
-      SELECT * FROM categorias
-      
+        SELECT * FROM categorias
     `;
+
     const [resultado] = await bd.query(sql);
     return resultado;
 }
 
 async function buscarcategoriasPorId(id) {
-    const sql = `SELECT * FROM categorias WHERE id = ?    
+    const sql = `
+        SELECT * FROM categorias WHERE id = ?
     `;
+
     const [resultado] = await bd.query(sql, [id]);
-    return resultado[0]; 
+    return resultado[0];
 }
 
-async function criarCategoria(id_produto, categoria) {
-    const sql = `INSERT INTO categorias (id_produto, Categoria) VALUES (?, ?)`;
-    const [resultado] = await bd.query(sql, [id_produto, categoria]);
-    
+async function criarCategoria(nome) {
+    const sql = `
+        INSERT INTO categorias (nome) VALUES (?)
+    `;
+
+    const [resultado] = await bd.query(sql, [nome]);
+
     return {
         id: resultado.insertId,
-        id_produto,
-        categoria
+        nome
     };
 }
 
-async function editar (id, categoria)  {
-    await db.query(
-        "UPDATE categorias SET categoria=? WHERE id=?",
-        [ categoria, id] 
-    );
+async function editar(id, nome) {
+    const sql = `
+        UPDATE categorias SET nome = ? WHERE id = ?
+    `;
 
-    return{
-        id,
-        categoria
-    };
+    const [resultado] = await bd.query(sql, [nome, id]);
+
+    return resultado.affectedRows;
 }
-async function excluir (id)  {
-    const [resultado] = await db.query(
-        "DELETE FROM categorias WHERE id=?",
-        [id]
-    )
-    
+
+async function excluir(id) {
+    const sql = `
+        DELETE FROM categorias WHERE id = ?
+    `;
+
+    const [resultado] = await bd.query(sql, [id]);
+
     return resultado.affectedRows;
 }
 
@@ -53,4 +57,4 @@ module.exports = {
     criarCategoria,
     editar,
     excluir
-}
+};
