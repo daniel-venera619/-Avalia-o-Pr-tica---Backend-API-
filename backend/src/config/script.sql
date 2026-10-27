@@ -29,7 +29,10 @@ INSERT INTO categorias (nome) VALUES
 INSERT INTO produto
 (nome, descricao, preco, qtd_estoque, qtd_minima, id_categoria)
 VALUES
-('Garrafa de agua', 'Agua mineral', 10.50, 50, 25, 1);
+('Garrafa de agua', 'Agua mineral', 10.50, 50, 25, 1),
+('Salgadinho', 'crocancia cade mordida', 25.48, 50, 25, 2),
+('Sabone', 'Lava e deixa cheiroso', 50.25, 50, 25, 3);
+
 
 SELECT
     p.id AS 'ID Produto',

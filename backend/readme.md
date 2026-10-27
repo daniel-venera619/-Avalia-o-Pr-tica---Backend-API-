@@ -16,15 +16,7 @@ API REST desenvolvida em Node.js para gerenciamento de produtos, categorias e co
 
 
 ## DER
-
-
-
-
-### Relacionamento
-
-Uma categoria pode possuir vários produtos. Cada produto está associado a uma categoria por meio do campo `id_categoria`.
-
-O relacionamento entre as tabelas é de **um para muitos (1:N)**.
+![DER](../backend/src/config/DER.png)
 
 ## Como executar o projeto
 
@@ -41,12 +33,10 @@ npm install node nodemon express dotenv mysql2
 ### 4. Copie .env.example para .env e ajuste usuário, senha e demais configurações;
 
 ### 5. Execute npm run dev para desenvolvimento ou npm start para execução normal;
-### 6. A API ficará disponível em http://localhost:3033.
+
+### 6. A API ficará disponível em http://localhost:3042.
 
 Não compartilhe o arquivo .env nem inclua credenciais reais no repositório.
-
-Para executar o servidor com Node.js:
-
 
 ## Rotas da API
 
@@ -57,6 +47,7 @@ Base: `/produtos`
 | Método | Rota | Descrição |
 |---|---|---|
 | GET | `/produtos` | Lista todos os produtos |
+| GET | `/categoria/:categoria` | Buscar produtos pela categoria |
 | GET | `/produtos/:id` | Busca um produto pelo ID |
 | POST | `/produtos` | Cadastra um produto |
 | PUT | `/produtos/:id` | Atualiza os dados de um produto |
@@ -66,6 +57,7 @@ Os filtros por categoria e situação são independentes. Envie apenas um deles 
 
 Exemplo de corpo para POST/PUT
 
+```json
 {
     "nome": "Arroz",
     "descricao": "Pacote de arroz de 5kg",
@@ -74,7 +66,7 @@ Exemplo de corpo para POST/PUT
     "qtd_minima": 10,
     "id_categoria": 2
 }
-
+```
 
 ### Categorias
 
@@ -91,6 +83,8 @@ Base: `/categorias`
 
 Exemplo de corpo para POST/PUT
 
+```json
 {
     "nome": "Bebidas"
 }
+```

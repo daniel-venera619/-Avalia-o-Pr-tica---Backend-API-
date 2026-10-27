@@ -8,6 +8,13 @@ async function buscarProdutos() {
     return resultado;
 }
 
+async function buscarProdutoPorCategoria(id_categoria) {
+    const sql = `SELECT * FROM produto WHERE id_categoria = ?`;
+
+    const [resultado] = await bd.query(sql, [id_categoria]);
+    return resultado;
+}
+
 async function buscarProdutoPorId(id) {
     const sql = `SELECT * FROM produto WHERE id = ?`;
 
@@ -53,8 +60,9 @@ async function excluir(id)
 
 module.exports = {
     buscarProdutos,
+    buscarProdutoPorCategoria,
     buscarProdutoPorId,
     criarProduto,
-    editar,
+    editar,        
     excluir
 };

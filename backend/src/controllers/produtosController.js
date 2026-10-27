@@ -8,6 +8,20 @@ const buscarTodos = async (req, res) => {
     console.log(produtos);
     res.json(produtos);
 };
+
+const buscarPorCategoria = async (req, res) => {
+    const categoria = req.params.categoria;
+    const produto = await produtoModel.buscarProdutoPorCategoria(categoria);
+
+    if (!produto) {
+        return res.status(404).json({
+            mensagem: "Categoria não encontrado"
+        });
+    }
+
+    res.json(produto);
+};
+
 const buscarPorId = async (req, res) => {
     const id = req.params.id;
     const produto = await produtoModel.buscarProdutoPorId(id);
@@ -94,6 +108,7 @@ const excluir = async (req, res) => {
 
 module.exports = {
     buscarTodos,
+    buscarPorCategoria,
     buscarPorId,
     criar,
     editarProduto,
