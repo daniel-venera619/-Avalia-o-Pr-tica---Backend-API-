@@ -1,65 +1,55 @@
 
 const categoriasModel = require("../models/categoriasModel");
+const httpError = require("../utils/httpError");
+const { validarId, validarNomeCategoria } = require("../utils/validation");
 
 const buscarTodos = async (req, res) => {
-    const categorias = await categoriasModel.buscarCategoria();
-    console.log(categorias);
-
-    res.json(categorias);
+    res.json(await categoriasModel.buscarCategoria());
 };
 
 const buscarPorId = async (req, res) => {
-    const id = req.params.id;
+    const id = validarId(req.params.id);
     const categoria = await categoriasModel.buscarcategoriasPorId(id);
 
     if (!categoria) {
-        return res.status(404).json({
-            mensagem: "Categoria não encontrada"
-        });
+        throw httpError(404, "Categoria não encontrada");
     }
 
     res.json(categoria);
 };
 
 const criar = async (req, res) => {
-    const { nome } = req.body;
-    const criar = await categoriasModel.criarCategoria(nome);
-
-    res.status(201).json(criar);
+    const nome = validarNomeCategoria(req.body);
+    res.status(201).json(await categoriasModel.criarCategoria(nome));
 };
 
 const editar = async (req, res) => {
-    const id = req.params.id;
-    const { nome } = req.body;
+    const id = validarId(req.params.id);
+    const nome = validarNomeCategoria(req.body);
 
     const categoria = await categoriasModel.buscarcategoriasPorId(id);
 
     if (!categoria) {
-        return res.status(404).json({
-            mensagem: "Categoria não encontrada"
-        });
+        throw httpError(404, "Categoria não encontrada");
     }
 
-    const categoriaAtualizada = await categoriasModel.editar(id, nome);
-
-    res.json(categoriaAtualizada);
+    await categoriasModel.editar(id, nome);
+    res.json({ id, nome });
 };
 
 const excluir = async (req, res) => {
-    const id = req.params.id;
+    const id = validarId(req.params.id);
     const categoria = await categoriasModel.buscarcategoriasPorId(id);
 
     if (!categoria) {
-        return res.status(404).json({
-            mensagem: "Categoria não encontrada"
-        });
+        throw httpError(404, "Categoria não encontrada");
     }
 
-    await categoriasModel.excluir(id);
-
-    res.json({
-        mensagem: "Categoria removida com sucesso"
-    });
+    const excluidas = await categoriasModel.excluir(id);
+    if (!excluidas) {
+        throw httpError(404, "Categoria não encontrada");
+    }
+    res.json({ mensagem: "Categoria removida com sucesso" });
 };
 
 module.exports = {

@@ -1,44 +1,39 @@
- # Organiza Comercial — API de Produtos e Estoque
+# Organiza Comercial - API de Produtos e Estoque
 
-API REST desenvolvida em Node.js para gerenciamento de produtos, categorias e controle de estoque, utilizando o padrão MVC e banco de dados MySQL.
+API REST em Node.js e Express para gerenciamento de produtos, categorias e estoque, organizada em MVC e integrada ao MySQL por meio de `mysql2`.
 
-## Tecnologias
+## Requisitos
 
-- Node.js
-- Express
-- MySQL
+- Node.js 18 ou superior
+- MySQL 8.0.16 ou superior (para aplicar as restrições `CHECK` do script)
 
-## Bibliotecas
+## Configuração e execução
 
-- `express` — criação do servidor e das rotas da API.
-- `mysql2` — conexão e consultas ao banco de dados MySQL.
-- `dotenv` — gerenciamento das variáveis de ambiente.
+1. Na pasta `backend`, instale as dependências:
 
+   ```sh
+   npm install
+   ```
 
-## DER
-![DER](../backend/src/config/DER.png)
+2. Crie o banco e as tabelas executando `src/config/script.sql` no MySQL Workbench ou no cliente MySQL.
+3. Copie `.env.example` para `.env` e preencha as configurações do seu MySQL:
 
-## Como executar o projeto
+   ```text
+   PORT=3042
+   DB_HOST=localhost
+   DB_USER=seu_usuario
+   DB_PASSWORD=sua_senha
+   DB_PORT=3306
+   DB_NAME=controleDeEstoque
+   ```
 
-### 1. Execute database/script.sql no MySQL Worckbench;
+   No PowerShell, a cópia pode ser feita com `Copy-Item .env.example .env`.
+4. Inicie em desenvolvimento com `npm run dev`, ou em execução normal com `npm start`.
+5. A API estará disponível em `http://localhost:3042` (ou na porta definida em `PORT`).
 
-### 2. Abra um terminal na pasta do projeto e execute:
+Não versionar nem compartilhar o arquivo `.env` com credenciais reais.
 
-npm init -y
-
-### 3. Depois execute:
-
-npm install node nodemon express dotenv mysql2
-
-### 4. Copie .env.example para .env e ajuste usuário, senha e demais configurações;
-
-### 5. Execute npm run dev para desenvolvimento ou npm start para execução normal;
-
-### 6. A API ficará disponível em http://localhost:3042.
-
-Não compartilhe o arquivo .env nem inclua credenciais reais no repositório.
-
-## Rotas da API
+## Rotas
 
 ### Produtos
 
@@ -46,27 +41,47 @@ Base: `/produtos`
 
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/produtos` | Lista todos os produtos |
-| GET | `/categoria/:categoria` | Buscar produtos pela categoria |
-| GET | `/produtos/:id` | Busca um produto pelo ID |
+| GET | `/produtos` | Lista os produtos; aceita filtros por query string |
+| GET | `/produtos?categoria=2` | Filtra por ID da categoria |
+| GET | `/produtos?estoque=normal` | Filtra estoque normal |
+| GET | `/produtos?estoque=baixo` | Filtra estoque baixo |
+| GET | `/produtos?estoque=sem_estoque` | Filtra produtos sem estoque |
+| GET | `/produtos?categoria=2&estoque=baixo` | Combina os filtros |
+| GET | `/produtos/categoria/:categoria` | Lista produtos da categoria (rota compatível) |
+| GET | `/produtos/:id` | Consulta um produto pelo ID |
 | POST | `/produtos` | Cadastra um produto |
-| PUT | `/produtos/:id` | Atualiza os dados de um produto |
+| PUT | `/produtos/:id` | Substitui todos os dados do produto |
+| PATCH | `/produtos/:id` | Atualiza somente os campos informados |
 | DELETE | `/produtos/:id` | Exclui um produto |
 
-Os filtros por categoria e situação são independentes. Envie apenas um deles por requisição.
+Situações do estoque:
 
-Exemplo de corpo para POST/PUT
+- `normal`: quantidade disponível maior que a quantidade mínima.
+- `baixo`: quantidade disponível maior que zero e menor ou igual à quantidade mínima.
+- `sem_estoque`: quantidade disponível igual a zero.
+
+Exemplo de corpo para cadastro ou substituição completa:
 
 ```json
 {
-    "nome": "Arroz",
-    "descricao": "Pacote de arroz de 5kg",
-    "preco": 28.90,
-    "qtd_estoque": 50,
-    "qtd_minima": 10,
-    "id_categoria": 2
+  "nome": "Arroz",
+  "descricao": "Pacote de arroz de 5kg",
+  "preco": 28.9,
+  "qtd_estoque": 50,
+  "qtd_minima": 10,
+  "id_categoria": 2
 }
 ```
+
+Exemplo de atualização parcial:
+
+```json
+{
+  "qtd_estoque": 8
+}
+```
+
+O preço deve ser maior que zero; as quantidades devem ser inteiros não negativos; e a categoria informada deve existir.
 
 ### Categorias
 
@@ -75,16 +90,21 @@ Base: `/categorias`
 | Método | Rota | Descrição |
 |---|---|---|
 | GET | `/categorias` | Lista todas as categorias |
-| GET | `/categorias/:id` | Busca uma categoria pelo ID |
+| GET | `/categorias/:id` | Consulta uma categoria |
 | POST | `/categorias` | Cadastra uma categoria |
-| PUT | `/categorias/:id` | Atualiza uma categoria |
-| DELETE | `/categorias/:id` | Exclui uma categoria |
+| PUT | `/categorias/:id` | Atualiza o nome da categoria |
+| DELETE | `/categorias/:id` | Exclui uma categoria sem produtos associados |
 
-
-Exemplo de corpo para POST/PUT
+Exemplo de corpo:
 
 ```json
 {
-    "nome": "Bebidas"
+  "nome": "Bebidas"
 }
 ```
+
+Erros de validação retornam HTTP 400, registros inexistentes retornam HTTP 404, conflitos de integridade retornam HTTP 409 e falhas inesperadas retornam HTTP 500 sem expor detalhes internos.
+
+## DER
+
+![Diagrama Entidade-Relacionamento](src/config/DER.png)

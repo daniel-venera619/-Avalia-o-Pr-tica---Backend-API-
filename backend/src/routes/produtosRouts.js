@@ -6,7 +6,8 @@ router.get("/", produtosController.buscarTodos);
 router.get("/categoria/:categoria", produtosController.buscarPorCategoria);
 router.get("/:id", produtosController.buscarPorId);
 router.post("/", produtosController.criar);
-router.put("/:id", produtosController.editarProduto);
+router.put("/:id", produtosController.substituir);
+router.patch("/:id", produtosController.editarParcial);
 router.delete("/:id", produtosController.excluir);
 
 module.exports = router;
