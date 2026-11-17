@@ -47,7 +47,6 @@ Base: `/produtos`
 | GET | `/produtos?estoque=baixo` | Filtra estoque baixo |
 | GET | `/produtos?estoque=sem_estoque` | Filtra produtos sem estoque |
 | GET | `/produtos?categoria=2&estoque=baixo` | Combina os filtros |
-| GET | `/produtos/categoria/:categoria` | Lista produtos da categoria (rota compatível) |
 | GET | `/produtos/:id` | Consulta um produto pelo ID |
 | POST | `/produtos` | Cadastra um produto |
 | PUT | `/produtos/:id` | Substitui todos os dados do produto |

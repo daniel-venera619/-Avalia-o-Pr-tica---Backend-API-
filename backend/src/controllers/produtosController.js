@@ -21,11 +21,6 @@ const buscarTodos = async (req, res) => {
     res.json(await produtoModel.buscarProdutos(filtros));
 };
 
-const buscarPorCategoria = async (req, res) => {
-    const categoria = validarId(req.params.categoria, "categoria");
-    res.json(await produtoModel.buscarProdutoPorCategoria(categoria));
-};
-
 const buscarPorId = async (req, res) => {
     const id = validarId(req.params.id);
     const produto = await produtoModel.buscarProdutoPorId(id);
@@ -86,7 +81,6 @@ const excluir = async (req, res) => {
 
 module.exports = {
     buscarTodos,
-    buscarPorCategoria,
     buscarPorId,
     criar,
     substituir,

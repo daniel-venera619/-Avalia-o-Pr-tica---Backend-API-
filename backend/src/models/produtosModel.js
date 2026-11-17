@@ -1,5 +1,28 @@
 const bd = require("../config/database");
 
+function situacaoEstoque(qtd_estoque, qtd_minima) {
+    if (qtd_estoque === 0) {
+        return "sem_estoque";
+    }
+
+    if (qtd_estoque > 0 && qtd_estoque <= qtd_minima) {
+        return "baixo";
+    }
+
+    return "normal";
+}
+
+function incluirSituacaoEstoque(produto) {
+    if (!produto) {
+        return produto;
+    }
+
+    return {
+        ...produto,
+        situacao_estoque: situacaoEstoque(produto.qtd_estoque, produto.qtd_minima)
+    };
+}
+
 async function buscarProdutos(filtros = {}) {
     const condicoes = [];
     const parametros = [];
@@ -19,18 +42,14 @@ async function buscarProdutos(filtros = {}) {
 
     const where = condicoes.length ? `WHERE ${condicoes.join(" AND ")}` : "";
     const [resultado] = await bd.query(`SELECT * FROM produto ${where}`, parametros);
-    return resultado;
-}
-
-async function buscarProdutoPorCategoria(id_categoria) {
-    return buscarProdutos({ id_categoria });
+    return resultado.map(incluirSituacaoEstoque);
 }
 
 async function buscarProdutoPorId(id) {
     const sql = `SELECT * FROM produto WHERE id = ?`;
 
     const [resultado] = await bd.query(sql, [id]);
-    return resultado[0];
+    return incluirSituacaoEstoque(resultado[0]);
 }
 
 async function categoriaExiste(id_categoria) {
@@ -65,7 +84,6 @@ async function excluir(id) {
 
 module.exports = {
     buscarProdutos,
-    buscarProdutoPorCategoria,
     buscarProdutoPorId,
     categoriaExiste,
     criarProduto,
